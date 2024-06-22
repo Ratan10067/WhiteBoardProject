@@ -38,6 +38,14 @@ const Toolbar = () => {
       >
         <LuRectangleHorizontal />
       </div>
+      <div
+        className={cx(classes.toolItem, {
+          [classes.active]: activeToolItem === TOOL_ITEMS.CIRCLE,
+        })}
+        onClick={() => changeToolHandler(TOOL_ITEMS.CIRCLE)}
+      >
+        <FaRegCircle />
+      </div>
     </div>
   );
 };
