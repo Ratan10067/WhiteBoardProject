@@ -1,5 +1,6 @@
-import { TOOL_ITEMS } from "../constants";
+import { ARROW_LENGTH, TOOL_ITEMS } from "../constants";
 import rough from "roughjs/bin/rough"
+import { getArrowHeadsCoordinates } from "./Math";
 const gen = rough.generator();
 export const createRoughElement = (id, x1, y1, x2, y2, { type }) => {
     const element = {
@@ -20,8 +21,20 @@ export const createRoughElement = (id, x1, y1, x2, y2, { type }) => {
             const cy = (y1 + y2) / 2;
             const width = x2 - x1;
             const height = y2 - y1;
-            element.roughElement = gen.ellipse(cx,cy,width,height,options);
+            element.roughElement = gen.ellipse(cx, cy, width, height, options);
             return element;
+        case TOOL_ITEMS.ARROW: {
+            const { x3, y3, x4, y4 } = getArrowHeadsCoordinates(x1, y1, x2, y2, ARROW_LENGTH);
+            const points = [
+                [x1, y1],
+                [x2, y2],
+                [x3, y3],
+                [x2, y2],
+                [x4, y4]
+            ]
+            element.roughElement = gen.linearPath(points, options);
+            return element;
+        }
         default:
             throw new Error("Type not recognised");
     }
