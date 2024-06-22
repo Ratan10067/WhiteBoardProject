@@ -1,12 +1,17 @@
 import Board from "./components/Board";
 import Toolbar from "./components/Toolbar";
+import Toolbox from "./components/Toolbox";
 import BoardProvider from "./store/BoardProvider";
+import ToolBoxProvider from "./store/ToolBoxProvider";
 
 function App() {
   return (
     <BoardProvider>
-      <Toolbar />
-      <Board />
+      <ToolBoxProvider>
+        <Toolbar />
+        <Board />
+        <Toolbox />
+      </ToolBoxProvider>
     </BoardProvider>
   );
 }

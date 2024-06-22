@@ -1,10 +1,7 @@
 import React, { useReducer } from 'react';
 import boardcontext from './board-context';
-import { TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
-import rough from 'roughjs/bin/rough';
+import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from '../constants';
 import { createRoughElement } from '../Utils/element';
-
-const gen = rough.generator();
 
 const initialBoardState = {
   activeToolItem: TOOL_ITEMS.LINE,
@@ -14,36 +11,36 @@ const initialBoardState = {
 
 const boardReducer = (state, action) => {
   switch (action.type) {
-    case 'change_tool':
+    case BOARD_ACTIONS.CHANGE_TOOL:
       return {
         ...state,
         activeToolItem: action.payload.tool,
       };
-    case 'DRAW_DOWN':
-      const { clientX, clientY } = action.payload;
+    case BOARD_ACTIONS.DRAW_DOWN:
+      const { clientX, clientY, stroke, fill,size } = action.payload;
       const newElement = createRoughElement(
         state.elements.length,
-        clientX, clientY, clientX, clientY, { type: state.activeToolItem }
+        clientX, clientY, clientX, clientY, { type: state.activeToolItem, stroke, fill,size }
       );
       return {
         ...state,
         toolActionType: TOOL_ACTION_TYPES.DRAWING,
         elements: [...state.elements, newElement],
       };
-    case 'DRAW_MOVE':
+    case BOARD_ACTIONS.DRAW_MOVE:
       {
         const { clientX, clientY } = action.payload;
         const newElements = [...state.elements];
         const index = state.elements.length - 1;
-        const { x1, y1 } = newElements[index];
-        const newElement = createRoughElement(index, x1, y1, clientX, clientY, { type: state.activeToolItem, })
+        const { x1, y1, stroke, fill,size } = newElements[index];
+        const newElement = createRoughElement(index, x1, y1, clientX, clientY, { type: state.activeToolItem, stroke, fill,size })
         newElements[index] = newElement;
         return {
           ...state,
           elements: newElements,
         };
       }
-    case 'DRAW_UP':
+    case BOARD_ACTIONS.DRAW_UP:
       {
         return {
           ...state,
@@ -60,29 +57,35 @@ const BoardProvider = ({ children }) => {
 
   const changeToolHandler = (tool) => {
     dispatchBoardAction({
-      type: 'change_tool',
+      type: BOARD_ACTIONS.CHANGE_TOOL,
       payload: { tool },
     });
   };
 
-  const boardMouseDownHandler = (event) => {
+  const boardMouseDownHandler = (event, toolboxState) => {
     const { clientX, clientY } = event;
     dispatchBoardAction({
-      type: 'DRAW_DOWN',
-      payload: { clientX, clientY },
+      type: BOARD_ACTIONS.DRAW_DOWN,
+      payload: {
+        clientX,
+        clientY,
+        stroke: toolboxState[boardState.activeToolItem]?.stroke,
+        fill: toolboxState[boardState.activeToolItem]?.fill,
+        size: toolboxState[boardState.activeToolItem]?.size, 
+      },
     });
   };
 
   const boardMouseMoveHandler = (event) => {
     const { clientX, clientY } = event;
     dispatchBoardAction({
-      type: 'DRAW_MOVE',
+      type: BOARD_ACTIONS.DRAW_MOVE,
       payload: { clientX, clientY },
     });
   };
   const boardMouseUpHandler = (event) => {
     dispatchBoardAction({
-      type: 'DRAW_UP',
+      type: BOARD_ACTIONS.DRAW_UP,
     });
   };
   const boardcontextValue = {
