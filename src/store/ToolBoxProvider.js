@@ -1,7 +1,8 @@
-import React, { useReducer } from 'react'
-import toolboxcontext from './Toolbox-context'
-import { COLORS, TOOL_ITEMS, TOOLBOX_ACTIONS } from '../constants';
-function tooBoxReducer(state, action) {
+import React, { useReducer } from "react";
+import toolboxContext from "./toolbox-context";
+import { COLORS, TOOLBOX_ACTIONS, TOOL_ITEMS } from "../constants";
+
+function toolboxReducer(state, action) {
     switch (action.type) {
         case TOOLBOX_ACTIONS.CHANGE_STROKE: {
             const newState = { ...state };
@@ -22,7 +23,11 @@ function tooBoxReducer(state, action) {
             return state;
     }
 }
-const initialToolBoxState = {
+
+const initialToolboxState = {
+    [TOOL_ITEMS.BRUSH]: {
+        stroke: COLORS.BLACK,
+    },
     [TOOL_ITEMS.LINE]: {
         stroke: COLORS.BLACK,
         size: 1,
@@ -37,24 +42,34 @@ const initialToolBoxState = {
         fill: null,
         size: 1,
     },
-    [TOOL_ITEMS.Arrow]: {
+    [TOOL_ITEMS.ARROW]: {
         stroke: COLORS.BLACK,
         size: 1,
-    }
-}
-const ToolBoxProvider = ({ children }) => {
-    const [toolboxState, dispatchToolBoxAction] = useReducer(tooBoxReducer, initialToolBoxState);
+    },
+    [TOOL_ITEMS.TEXT]: {
+        stroke: COLORS.BLACK,
+        size: 32,
+    },
+};
+
+const ToolboxProvider = ({ children }) => {
+    const [toolboxState, dispatchToolboxAction] = useReducer(
+        toolboxReducer,
+        initialToolboxState
+    );
+
     const changeStrokeHandler = (tool, stroke) => {
-        dispatchToolBoxAction({
+        dispatchToolboxAction({
             type: TOOLBOX_ACTIONS.CHANGE_STROKE,
             payload: {
                 tool,
                 stroke,
-            }
-        })
-    }
+            },
+        });
+    };
+
     const changeFillHandler = (tool, fill) => {
-        dispatchToolBoxAction({
+        dispatchToolboxAction({
             type: TOOLBOX_ACTIONS.CHANGE_FILL,
             payload: {
                 tool,
@@ -62,15 +77,18 @@ const ToolBoxProvider = ({ children }) => {
             },
         });
     };
-    const changeSizeHandler = (tool,size) => {
-        dispatchToolBoxAction({
+
+    const changeSizeHandler = (tool, size) => {
+        dispatchToolboxAction({
             type: TOOLBOX_ACTIONS.CHANGE_SIZE,
             payload: {
-                tool, size,
+                tool,
+                size,
             },
         });
     };
-    const toolBoxContextValue = {
+
+    const toolboxContextValue = {
         toolboxState,
         changeStroke: changeStrokeHandler,
         changeFill: changeFillHandler,
@@ -78,10 +96,10 @@ const ToolBoxProvider = ({ children }) => {
     };
 
     return (
-        <toolboxcontext.Provider value={toolBoxContextValue}>
+        <toolboxContext.Provider value={toolboxContextValue}>
             {children}
-        </toolboxcontext.Provider>
-    )
-}
+        </toolboxContext.Provider>
+    );
+};
 
-export default ToolBoxProvider
+export default ToolboxProvider;

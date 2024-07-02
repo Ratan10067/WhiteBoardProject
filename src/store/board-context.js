@@ -4,10 +4,12 @@ const boardContext = createContext({
   activeToolItem: "",
   toolActionType: "",
   elements: [],
-  boardMouseDownHandler: () => {},
-  changeToolHandler: () => {},
-  boardMouseMoveHandler: () => {},
-  boardMouseUpHandler: () => {},
+  history: [[]],
+  index: 0,
+  boardMouseDownHandler: () => { },
+  changeToolHandler: () => { },
+  boardMouseMoveHandler: () => { },
+  boardMouseUpHandler: () => { },
 });
 
 export default boardContext;
